@@ -1,0 +1,6 @@
+streamlit
+matplotlib
+spectrum-utils
+plotly
+pandas
+numpy
