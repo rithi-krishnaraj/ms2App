@@ -1,10 +1,10 @@
 import streamlit as st #allows for building web application
 import matplotlib.pyplot as plt #allows for plotting
+import pandas as pd #allows for data handling
+import numpy as np #allows for numerical operations
 import spectrum_utils.plot as sup
 import spectrum_utils.spectrum as sus
 import plotly.tools as tls
-import pandas as pd #allows for data handling
-import numpy as np #allows for numerical operations
 
 def peak_filtering(scan_input): #DONE
     mz_array = scan_input["m/z data"]
@@ -13,7 +13,7 @@ def peak_filtering(scan_input): #DONE
     filtered_intensities = []
     pepmass_val = float(scan_input["PEPMASS Number"])
 
-        #basic peak filtering
+    #basic peak filtering
     for i, mz in enumerate(mz_array):
         peak_range = [j for j in range(len(mz_array)) if abs(mz_array[j] - mz) <= 25]
         sorted_range = sorted(peak_range, key=lambda j: intensity_array[j], reverse=True)
@@ -34,17 +34,12 @@ def peak_normalizing(filtered_intensities): #DONE
     return sqrt_intensities, normalized_intensities
 
 def peak_visual(mzs, intensities, scanNum, pepmass, charge):
-
-    spectrum = sus.MsmsSpectrum(mz = mzs, intensity=intensities, identifier=scanNum, precursor_mz=pepmass, precursor_charge=charge)
-    sup.spectrum(spectrum)
+    plt.figure(figsize=(10, 6))
+    plt.stem(mzs, intensities, basefmt=" ", use_line_collection=True)
     plt.title(f"MS2 Spectrum for Scan {scanNum}")
-    plt.xlabel("m/z", fontsize = 11)
-    plt.ylabel("Intensity", fontsize = 11)
-    fig = plt.gcf()
-    plotly_fig = tls.mpl_to_plotly(fig)
-    plotly_fig.update_traces(hoverinfo="x+y")
-    
-    st.plotly_chart(plotly_fig)  
+    plt.xlabel("m/z", fontsize=11)
+    plt.ylabel("Intensity", fontsize=11)
+    st.pyplot(plt)
 
 @st.cache_data
 def read_mgf_file(mgf_file): #DONE
@@ -102,19 +97,28 @@ if __name__ == "__main__":
         scans, scan_nums = read_mgf_file(mgf_file)
 
         df = pd.DataFrame(scans, columns = ["Scan Number", "Spectrum ID", "PEPMASS Number", "Charge State", "SMILES ID"])
-        #Search Box For Scan Number -> Searches for Searched Scan Number within file
-        scan_input = st.selectbox("Select Scan Number to view MS2 Spectrum", options = scan_nums)
         
+        # Dropdown menu for selecting scan number
+        scan_input = st.selectbox("Select Scan Number to view MS2 Spectrum", options=scan_nums)
+        
+        # Display the DataFrame in an expander to make it more compressed
         with st.expander("Show Scans"):
             st.dataframe(df) #Outputs Dataframe of Scans
 
         if scan_input:
-            mz_filtered, sqrt_filtered, normal_filtered = peak_filtering(scan_input)
-            if st.button("Unfiltered Spectrum"):
+            st.write("Scan Number Found Within File - Use Filters to View Data")
+            
+            # Provide options to view either a filtered peak or an unfiltered peak
+            if st.checkbox("View Filtered Peak"):
+                mz_filtered, sqrt_filtered, normal_filtered = peak_filtering(scan_input)
+                if st.checkbox("Square Root Normalized"):
+                    peak_visual(mz_filtered, sqrt_filtered, str(scan_input["Scan Number"]), scan_input["PEPMASS Number"], scan_input["Charge State"])
+                else:
+                    peak_visual(mz_filtered, normal_filtered, str(scan_input["Scan Number"]), scan_input["PEPMASS Number"], scan_input["Charge State"])
+            else:
                 peak_visual(scan_input["m/z data"], scan_input["intensity data"], str(scan_input["Scan Number"]), scan_input["PEPMASS Number"], scan_input["Charge State"])
-            if st.button("Filtered Spectrum - Normalized"):
-                peak_visual(mz_filtered, normal_filtered, str(scan_input["Scan Number"]), scan_input["PEPMASS Number"], scan_input["Charge State"])
-            if st.button("Filtered Spectrum - Square Root"):
+
+
                 peak_visual(mz_filtered, sqrt_filtered, str(scan_input["Scan Number"]), scan_input["PEPMASS Number"], scan_input["Charge State"])
     
 
