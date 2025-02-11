@@ -6,12 +6,12 @@ import plotly.tools as tls
 import pandas as pd #allows for data handling
 import numpy as np #allows for numerical operations
 
-def peak_filtering(user_scan): #DONE
-    mz_array = user_scan["m/z data"]
-    intensity_array = user_scan["intensity data"]
+def peak_filtering(scan_input): #DONE
+    mz_array = scan_input["m/z data"]
+    intensity_array = scan_input["intensity data"]
     filtered_mz = []
     filtered_intensities = []
-    pepmass_val = float(user_scan["PEPMASS Number"])
+    pepmass_val = float(scan_input["PEPMASS Number"])
 
         #basic peak filtering
     for i, mz in enumerate(mz_array):
