@@ -6,12 +6,12 @@ import spectrum_utils.plot as sup
 import spectrum_utils.spectrum as sus
 import plotly.tools as tls
 
-def peak_filtering(scan_input): #DONE
-    mz_array = scan_input["m/z data"]
-    intensity_array = scan_input["intensity data"]
+def peak_filtering(user_scan): #DONE
+    mz_array = user_scan["m/z data"]
+    intensity_array = user_scan["intensity data"]
     filtered_mz = []
     filtered_intensities = []
-    pepmass_val = float(scan_input["PEPMASS Number"])
+    pepmass_val = float(user_scan["PEPMASS Number"])
 
     #basic peak filtering
     for i, mz in enumerate(mz_array):
@@ -106,10 +106,11 @@ if __name__ == "__main__":
             st.dataframe(df) #Outputs Dataframe of Scans
 
         if scan_input:
+            user_scan = next(scan for scan in scans if scan["Scan Number"] == scan_input)
             mz_filtered, sqrt_filtered, normal_filtered = peak_filtering(scan_input)
             if st.button("View Unfiltered Spectrum"):
-                peak_visual(scan_input["m/z data"], scan_input["intensity data"], str(scan_input["Scan Number"]), scan_input["PEPMASS Number"], scan_input["Charge State"])
+                peak_visual(user_scan["m/z data"], user_scan["intensity data"], str(user_scan["Scan Number"]), user_scan["PEPMASS Number"], user_scan["Charge State"])
             if st.button("View Filtered Spectrum - Normalized"):
-                peak_visual(mz_filtered, normal_filtered, str(scan_input["Scan Number"]), scan_input["PEPMASS Number"], scan_input["Charge State"])
+                peak_visual(mz_filtered, normal_filtered, str(user_scan["Scan Number"]), user_scan["PEPMASS Number"], user_scan["Charge State"])
             if st.button("View Filtered Spectrum - Square Root Normalized"):
-                peak_visual(mz_filtered, sqrt_filtered, str(scan_input["Scan Number"]), scan_input["PEPMASS Number"], scan_input["Charge State"])
+                peak_visual(mz_filtered, sqrt_filtered, str(user_scan["Scan Number"]), user_scan["PEPMASS Number"], user_scan["Charge State"])
