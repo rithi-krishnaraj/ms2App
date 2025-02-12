@@ -106,20 +106,10 @@ if __name__ == "__main__":
             st.dataframe(df) #Outputs Dataframe of Scans
 
         if scan_input:
-            st.write("Scan Number Found Within File - Use Filters to View Data")
-            
-            # Provide options to view either a filtered peak or an unfiltered peak
-            if st.checkbox("View Filtered Peak"):
-                mz_filtered, sqrt_filtered, normal_filtered = peak_filtering(scan_input)
-                if st.checkbox("Square Root Normalized"):
-                    peak_visual(mz_filtered, sqrt_filtered, str(scan_input["Scan Number"]), scan_input["PEPMASS Number"], scan_input["Charge State"])
-                else:
-                    peak_visual(mz_filtered, normal_filtered, str(scan_input["Scan Number"]), scan_input["PEPMASS Number"], scan_input["Charge State"])
-            else:
+            mz_filtered, sqrt_filtered, normal_filtered = peak_filtering(scan_input)
+            if st.button("View Unfiltered Spectrum"):
                 peak_visual(scan_input["m/z data"], scan_input["intensity data"], str(scan_input["Scan Number"]), scan_input["PEPMASS Number"], scan_input["Charge State"])
-
-
+            if st.button("View Filtered Spectrum - Normalized"):
+                peak_visual(mz_filtered, normal_filtered, str(scan_input["Scan Number"]), scan_input["PEPMASS Number"], scan_input["Charge State"])
+            if st.button("View Filtered Spectrum - Square Root Normalized"):
                 peak_visual(mz_filtered, sqrt_filtered, str(scan_input["Scan Number"]), scan_input["PEPMASS Number"], scan_input["Charge State"])
-    
-
-    
