@@ -34,12 +34,16 @@ def peak_normalizing(filtered_intensities): #DONE
     return sqrt_intensities, normalized_intensities
 
 def peak_visual(mzs, intensities, scanNum, pepmass, charge):
-    plt.figure(figsize=(10, 6))
-    plt.stem(mzs, intensities, basefmt=" ", use_line_collection=True)
+    spectrum = sus.MsmsSpectrum(mz=mzs, intensity=intensities, identifier=scanNum, precursor_mz=pepmass, precursor_charge=charge)
+    sup.spectrum(spectrum)
     plt.title(f"MS2 Spectrum for Scan {scanNum}")
     plt.xlabel("m/z", fontsize=11)
     plt.ylabel("Intensity", fontsize=11)
-    st.pyplot(plt)
+    fig = plt.gcf()
+    plotly_fig = tls.mpl_to_plotly(fig)
+    plotly_fig.update_traces(hoverinfo="x+y")
+    st.plotly_chart(plotly_fig)
+    plt.close(fig)
 
 @st.cache_data
 def read_mgf_file(mgf_file): #DONE
