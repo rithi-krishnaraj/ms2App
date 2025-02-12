@@ -2,6 +2,7 @@ import streamlit as st #allows for building web application
 import matplotlib.pyplot as plt #allows for plotting
 import pandas as pd #allows for data handling
 import numpy as np #allows for numerical operations
+# from scipy.signal import find_peaks
 import spectrum_utils.plot as sup
 import spectrum_utils.spectrum as sus
 import plotly.tools as tls
@@ -33,7 +34,7 @@ def peak_normalizing(filtered_intensities): #DONE
 
     return sqrt_intensities, normalized_intensities
 
-def peak_visual(mzs, intensities, scanNum, pepmass, charge):
+def peak_visual(mzs, intensities, scanNum, pepmass, charge): 
     spectrum = sus.MsmsSpectrum(mz=mzs, intensity=intensities, identifier=scanNum, precursor_mz=pepmass, precursor_charge=charge)
     sup.spectrum(spectrum)
     plt.title(f"MS2 Spectrum for Scan {scanNum}")
@@ -43,7 +44,6 @@ def peak_visual(mzs, intensities, scanNum, pepmass, charge):
     plotly_fig = tls.mpl_to_plotly(fig)
     plotly_fig.update_traces(hoverinfo="x+y")
     st.plotly_chart(plotly_fig)
-    plt.close(fig)
 
 @st.cache_data
 def read_mgf_file(mgf_file): #DONE
@@ -104,7 +104,7 @@ if __name__ == "__main__":
         
         # Dropdown menu for selecting scan number
         scan_input = st.selectbox("Select Scan Number to view MS2 Spectrum", options=scan_nums)
-        
+
         # Display the DataFrame in an expander to make it more compressed
         with st.expander("Show Scans"):
             st.dataframe(df) #Outputs Dataframe of Scans
