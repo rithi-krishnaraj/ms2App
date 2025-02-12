@@ -108,9 +108,13 @@ if __name__ == "__main__":
         if scan_input:
             user_scan = next(scan for scan in scans if scan["Scan Number"] == scan_input)
             mz_filtered, sqrt_filtered, normal_filtered = peak_filtering(user_scan)
-            if st.button("View Unfiltered Spectrum"):
-                peak_visual(user_scan["m/z data"], user_scan["intensity data"], str(user_scan["Scan Number"]), user_scan["PEPMASS Number"], user_scan["Charge State"])
-            if st.button("View Filtered Spectrum - Normalized"):
-                peak_visual(mz_filtered, normal_filtered, str(user_scan["Scan Number"]), user_scan["PEPMASS Number"], user_scan["Charge State"])
-            if st.button("View Filtered Spectrum - Square Root Normalized"):
-                peak_visual(mz_filtered, sqrt_filtered, str(user_scan["Scan Number"]), user_scan["PEPMASS Number"], user_scan["Charge State"])
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                if st.button("View Unfiltered Spectrum"):
+                    peak_visual(user_scan["m/z data"], user_scan["intensity data"], str(user_scan["Scan Number"]), user_scan["PEPMASS Number"], user_scan["Charge State"])
+            with col2:
+                if st.button("View Filtered Spectrum - Normalized"):
+                    peak_visual(mz_filtered, normal_filtered, str(user_scan["Scan Number"]), user_scan["PEPMASS Number"], user_scan["Charge State"])
+            with col3:
+                if st.button("View Filtered Spectrum - Square Root Normalized"):
+                    peak_visual(mz_filtered, sqrt_filtered, str(user_scan["Scan Number"]), user_scan["PEPMASS Number"], user_scan["Charge State"])
